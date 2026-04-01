@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AI File Summarizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #drop-area {
+      padding: 40px;
+      border: 2px dashed #007bff;
+      border-radius: 10px;
+      text-align: center;
+      background: #eef5ff;
+      color: #007bff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #drop-area.dragover {
+      background: #dce9ff;
+      border-color: #0056b3;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-top: 20px;
+      padding: 10px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #file-name {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>AI File Summarizer</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div id="drop-area">
+        <p>Drag & drop a TXT or PDF file here<br>or click to browse</p>
+      </div>
+
+      <input id="file-input" type="file" name="file" accept=".txt, .pdf" required>
+
+      <p id="file-name"></p>
+
+      <br>
+      <button type="submit">Summarize</button>
+    </form>
+
+    {% if summary %}
+    <h2>Summary:</h2>
+    <textarea readonly>{{ summary }}</textarea>
+    {% endif %}
+  </div>
+
+  <script>
+    const dropArea = document.getElementById("drop-area");
+    const fileInput = document.getElementById("file-input");
+    const fileName = document.getElementById("file-name");
+
+    dropArea.addEventListener("click", () => fileInput.click());
+
+    // Highlight on drag
+    dropArea.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropArea.classList.add("dragover");
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+      dropArea.classList.remove("dragover");
+    });
+
+    // Handle dropped file
+    dropArea.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropArea.classList.remove("dragover");
+
+      const file = e.dataTransfer.files[0];
+
+      if (!file) return;
+
+      // FILTER FILE TYPES
+      if (!file.name.endsWith(".txt") && !file.name.endsWith(".pdf")) {
+        alert("Only .txt and .pdf files are supported.");
+        return;
+      }
+
+      fileInput.files = e.dataTransfer.files;
+      fileName.textContent = "Selected File: " + file.name;
+    });
+
+    // When browsed manually
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) fileName.textContent = "Selected File: " + file.name;
+    });
+  </script>
+
+</body>
+
+</html>
